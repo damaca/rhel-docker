@@ -1,0 +1,27 @@
+- name: Uninstall deprecated docker-py
+  pip: name=docker-py state=absent
+
+- name: Install docker-py to enable ansible docker task
+  pip: name=docker version={{ dockerpy_version | default(omit) }}
+
+- name: Adding docker repository
+  template: src=yum.repos.d/docker.repo.j2
+    dest=/etc/yum.repos.d/docker.repo
+    owner=root group=root mode=0644
+
+- name: Install docker dependencies for devicemapper storage
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - device-mapper-persistent-data
+    - lvm2
+
+- name: Install docker-ce (latest version)
+  yum: name=docker-ce state=latest update_cache=yes
+  when: docker_version == 'latest' or docker_version is not defined
+
+- name: Install docker-ce (specific version)
+  yum: name=docker-ce-{{ docker_version }} state=present update_cache=yes
+  when: not docker_version == 'latest'
+
+- name: Enable and start docker service
+  service: name=docker state=started enabled=yes

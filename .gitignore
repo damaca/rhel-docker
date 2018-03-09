@@ -1,0 +1,8 @@
+.DS_Store
+
+roles
+inventory.json
+inventory.ini
+
+test/.vagrant
+

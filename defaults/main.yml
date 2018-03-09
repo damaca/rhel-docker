@@ -1,0 +1,4 @@
+# Supported version of RHEL OS
+rhel_versions_supported:
+  - 6
+  - 7
